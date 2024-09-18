@@ -10,6 +10,8 @@ APuzzleManager::APuzzleManager()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// OBS! När alla pussel är färdiga så ska alla pussel läggas in i arrayn: PuzzleList
+
 }
 
 // Called when the game starts or when spawned
