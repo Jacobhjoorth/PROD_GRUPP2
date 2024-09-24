@@ -20,11 +20,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Puzzle")
 	bool bIsCompleted;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Puzzle")
+	bool bIsActive;
+
 	//Constructor to initialize default values
 	FPuzzleData()
 	{
 		PuzzleName = "DefaultPuzzle";
 		bIsCompleted = false;
+		bIsActive = false;
 	}
 };
 

@@ -53,5 +53,17 @@ bool APuzzleManager::IsPuzzleCompleted(FName PuzzleName) const
 	return false;
 }
 
+void APuzzleManager::StartPuzzle(FName PuzzleName)
+{
+	for(FPuzzleData& Puzzle : PuzzleList)
+	{
+		if(Puzzle.PuzzleName == PuzzleName)
+		{
+			Puzzle.bIsActive = true;
+		}
+	}
+}
+
+
 
 

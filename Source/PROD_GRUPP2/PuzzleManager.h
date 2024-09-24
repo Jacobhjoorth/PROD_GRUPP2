@@ -28,6 +28,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Puzzle")
 	bool IsPuzzleCompleted(FName PuzzleName) const;
 
+	// Function to check if a puzzle is completed
+	UFUNCTION(BlueprintCallable, Category="Puzzle")
+	void StartPuzzle(FName PuzzleName) ;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
