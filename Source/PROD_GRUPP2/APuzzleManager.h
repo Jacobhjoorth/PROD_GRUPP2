@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PuzzleData.h"
-#include "PuzzleManager.generated.h"
+#include "APuzzleManager.generated.h"
 
 UCLASS()
 class PROD_GRUPP2_API APuzzleManager : public AActor
