@@ -18,10 +18,13 @@ class PROD_GRUPP2_API AAudioController : public AActor
 	
 public:
 	// Sets default values for this actor's properties
-	//AAudioController();
+	AAudioController();
 
 	UFUNCTION(BlueprintCallable, Category="Audio")
-	void PlayOrStopSound(USoundBase* SoundToPlay, bool bShouldPlay) const;
+	void PlayOrStopSound(USoundBase* SoundToPlay, bool bShouldPlay);
+
+	UFUNCTION(BlueprintCallable, Category = "Audio")
+	void StopCurrentSound();
 
 protected:
 	// Called when the game starts or when spawned
@@ -30,4 +33,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+private:
+	TArray<UAudioComponent*> ActiveAudioComponents; // Array to track active audio components
+	USoundBase* CurrentSoundCue; // Currently playing sound cue
 };
