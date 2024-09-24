@@ -33,10 +33,7 @@ void AAudioController::PlayOrStopSound(USoundBase* SoundToPlay, bool bShouldPlay
 
 	if(bShouldPlay)
 	{
-		if(CurrentSoundCue != SoundCue)
-		{
-			StopCurrentSound();
-		}
+		StopCurrentSound();
 
 		// Spawn and play the new sound
 		UAudioComponent* AudioComponent = UGameplayStatics::SpawnSound2D(this, SoundCue);
