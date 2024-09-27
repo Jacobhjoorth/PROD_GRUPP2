@@ -4,18 +4,15 @@
 #include "Sound/SoundCue.h" // Include for USoundCue
 #include "FRoomData.generated.h"
 
-// Struct to store room data
 USTRUCT(BlueprintType)
 struct PROD_GRUPP2_API FRoomData
 {
 	GENERATED_BODY()
 
 public:
-	// Whether the player is in this room or not
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
 	bool bIsPlayerInRoom;
 
-	// The sound cue to play in this room
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
 	USoundCue* RoomSoundCue;
 
@@ -25,7 +22,7 @@ public:
 	FRoomData()
 	{
 		bIsPlayerInRoom = false;
-		RoomSoundCue = nullptr;
+		RoomSoundCue = nullptr; // Här kan man ha ett standard ljud som ska spelas när det inte finns någon tutorial
 		Name = "";
 	}
 };

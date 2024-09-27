@@ -7,6 +7,7 @@
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
 #include "Sound/SoundClass.h"
+#include "Sound/SoundMix.h"
 #include "Kismet/GameplayStatics.h"
 #include "AAudioController.generated.h"
 
@@ -21,10 +22,20 @@ public:
 	AAudioController();
 
 	UFUNCTION(BlueprintCallable, Category="Audio")
-	void PlayOrStopSound(USoundBase* SoundToPlay, bool bShouldPlay);
+	void PlayVoiceLine(USoundBase* SoundToPlay);
 
 	UFUNCTION(BlueprintCallable, Category = "Audio")
-	void StopCurrentSound();
+	void StopCurrentVoiceLine();
+	
+	void AdjustSoundClassVolume(USoundClass* SoundClass, float Volume);
+	
+	void RestoreSoundClassVolume();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundClass* FX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundClass* Ambient;
 
 protected:
 	// Called when the game starts or when spawned
@@ -35,6 +46,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	TArray<UAudioComponent*> ActiveAudioComponents; // Array to track active audio components
+	TArray<UAudioComponent*> ActiveVoiceLines; // Array to track active audio components
 	USoundBase* CurrentSoundCue; // Currently playing sound cue
 };
