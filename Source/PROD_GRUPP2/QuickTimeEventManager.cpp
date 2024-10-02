@@ -20,7 +20,7 @@ void UQuickTimeEventManager::BeginPlay()
 
 
 	ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	player->InputComponent->BindAxis(TEXT("Spacebar"),this, &UQuickTimeEventManager::ReactionEvaluation);
+	player->InputComponent->BindAction(TEXT("Reaction"), IE_Pressed, this, &UQuickTimeEventManager::ReactionEvaluation);
 	
 }
 
@@ -28,15 +28,47 @@ void UQuickTimeEventManager::Update()
 {
 	const float DeltaTime = UGameplayStatics::GetWorldDeltaSeconds(GetWorld());
 
-	if(ListOfQTs.IsValidIndex(0)) return;
+	if(ListOfQTs.IsEmpty()) return;
+
+	if(!ListOfQTs[0].bIsInit)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), ListOfQTs[0].initAudio);
+		ListOfQTs[0].bIsInit = true;
+	}
 
 	if((ListOfQTs[0].StartDelay -= DeltaTime) <= 0)
 	{
 		ListOfQTs[0].TimeFrame -= DeltaTime;
-		CheckEvent();
+		if(CheckEvent())
+		{
+			DoEventActions(ListOfQTs[0]);
+		
+		}
+		return;
+	}
+	if(bKeyPressed)
+	{
+		FailEvent();
 	}
 }
 
+bool UQuickTimeEventManager::AddQtEventIter(FQtEvent Qt, int num)
+{
+	for(int i = 0; i < num; i++)
+	{
+		AddQTEvent(Qt);
+	}
+	return true;
+}
+
+bool UQuickTimeEventManager::AddAllQTEvent(TArray<FQtEvent> Qt)
+{
+	for (FQtEvent Element : Qt)
+	{
+		AddQTEvent(Element);
+	}
+	return true;
+}
 
 bool UQuickTimeEventManager::AddQTEvent(FQtEvent Qt)
 {
@@ -48,9 +80,8 @@ bool UQuickTimeEventManager::AddQTEvent(FQtEvent Qt)
 	return false;
 }
 
-void UQuickTimeEventManager::ReactionEvaluation(float Value)
+void UQuickTimeEventManager::ReactionEvaluation()
 {
-	if(Value != 1){return;}
 	bKeyPressed = true;
 }
 
@@ -69,21 +100,37 @@ bool UQuickTimeEventManager::CheckEvent()
 	if(bKeyPressed){
 		SucceededEvent();
 		bKeyPressed = false;
-		return true;
+		return false;
 	}
 	
-	return false;
+	return true;
 }
 
 void  UQuickTimeEventManager::FailEvent()
 {
 	ListOfQTs.Empty();
 	UGameplayStatics::PlaySound2D(GetWorld(), FailSound);
+	OnFailed.Broadcast();
 }
 
 void  UQuickTimeEventManager::SucceededEvent()
 {
 	ListOfQTs.RemoveAt(0);
 	UGameplayStatics::PlaySound2D(GetWorld(), SucceededSound);
+	if(ListOfQTs.IsEmpty())
+	{
+		OnSucceeded.Broadcast();
+	}
+
 }
+
+void UQuickTimeEventManager::DoEventActions(FQtEvent& Qt)
+{
+	if(!Qt.bIsActive)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), Qt.Audio);
+		Qt.bIsActive = true;
+	}
+}
+
 
