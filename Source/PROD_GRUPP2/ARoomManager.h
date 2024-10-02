@@ -19,7 +19,7 @@ public:
 	TArray<FRoomData> Rooms;
 
 	UFUNCTION(BlueprintCallable, Category="Room")
-	USoundCue* GetCurrentRoomSoundCue() const;
+	USoundCue* GetTutorialVoiceLine() const;
 
 	UFUNCTION(BlueprintCallable, Category="Room")
 	void AddRoom(FName Name, USoundCue* SC);

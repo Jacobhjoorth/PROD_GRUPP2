@@ -6,7 +6,7 @@ AARoomManager::AARoomManager()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-USoundCue* AARoomManager::GetCurrentRoomSoundCue() const
+USoundCue* AARoomManager::GetTutorialVoiceLine() const
 {
 	for(const FRoomData& Room : Rooms)
 	{

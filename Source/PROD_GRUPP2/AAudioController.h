@@ -27,9 +27,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void StopCurrentVoiceLine();
 	
-	void AdjustSoundClassVolume(USoundClass* SoundClass, float Volume);
-	
+	void AdjustSoundClassVolume(USoundClass* SoundClass, float Volume) const;
+
+	UFUNCTION()
 	void RestoreSoundClassVolume();
+
+	void OnVoiceLineFinished();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	USoundClass* FX;
@@ -48,4 +51,7 @@ public:
 private:
 	TArray<UAudioComponent*> ActiveVoiceLines; // Array to track active audio components
 	USoundBase* CurrentSoundCue; // Currently playing sound cue
+	USoundClass* AmbientSoundClass;
+	USoundClass* FXSoundClass;
+	USoundMix* SoundMix;
 };
