@@ -18,11 +18,10 @@ class PROD_GRUPP2_API AAudioController : public AActor
 	GENERATED_BODY()
 	
 public:
-	// Sets default values for this actor's properties
 	AAudioController();
 
 	UFUNCTION(BlueprintCallable, Category="Audio")
-	void PlayVoiceLine(USoundBase* SoundToPlay);
+	bool PlayVoiceLine(USoundBase* SoundToPlay);
 
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void StopCurrentVoiceLine();
@@ -34,11 +33,11 @@ public:
 
 	void OnVoiceLineFinished();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
-	USoundClass* FX;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	//USoundClass* FX;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
-	USoundClass* Ambient;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	//USoundClass* Ambient;
 
 protected:
 	// Called when the game starts or when spawned
@@ -51,6 +50,8 @@ public:
 private:
 	TArray<UAudioComponent*> ActiveVoiceLines; // Array to track active audio components
 	USoundBase* CurrentSoundCue; // Currently playing sound cue
+
+	// Load SoundClass and SoundMix used for volume changes
 	USoundClass* AmbientSoundClass;
 	USoundClass* FXSoundClass;
 	USoundMix* SoundMix;

@@ -1,6 +1,4 @@
 #include "AAudioController.h"
-#include "Sound/SoundMix.h"
-#include "Kismet/GameplayStatics.h"
 
 AAudioController::AAudioController()
 {
@@ -8,10 +6,9 @@ AAudioController::AAudioController()
     ActiveVoiceLines = TArray<UAudioComponent*>();
     CurrentSoundCue = nullptr; // Initialize to nullptr
 
-    // Load your sound classes during initialization
+    // Load SoundClass and SoundMix used for volume changes
     AmbientSoundClass = LoadObject<USoundClass>(nullptr, TEXT("/Game/Audio/Audio_Classes/Ambient.Ambient"));
     FXSoundClass = LoadObject<USoundClass>(nullptr, TEXT("/Game/Audio/Audio_Classes/FX.FX"));
-
     SoundMix = NewObject<USoundMix>();
 }
 
@@ -25,12 +22,12 @@ void AAudioController::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 }
 
-void AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
+bool AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
 {
     if (!SoundToPlay)
     {
         UE_LOG(LogTemp, Warning, TEXT("No sound provided"));
-        return;
+        return false;
     }
 
     // Cast to USoundCue to ensure it's the correct type
@@ -39,20 +36,22 @@ void AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
     // Spawn and play the new sound
     UAudioComponent* AudioComponent = UGameplayStatics::SpawnSound2D(this, SoundCue);
     
+    // Bind the OnAudioFinished delegate to restore volume
+    AudioComponent->OnAudioFinished.AddDynamic(this, &AAudioController::RestoreSoundClassVolume);
+
     if (AudioComponent)
     {
-        // Bind the OnAudioFinished delegate to restore volume
-        AudioComponent->OnAudioFinished.AddDynamic(this, &AAudioController::RestoreSoundClassVolume);
-        
         // Play the audio component
         AudioComponent->Play();
         ActiveVoiceLines.Add(AudioComponent); // Add to active components
         CurrentSoundCue = SoundCue; // Update current sound cue
 
-        // Mute the ambient and FX sound classes
+        // Lower the volume of the ambient and FX sound classes
         AdjustSoundClassVolume(AmbientSoundClass, 0.2f);
         AdjustSoundClassVolume(FXSoundClass, 0.2f);
+        return true;
     }
+    return false;
 }
 
 void AAudioController::StopCurrentVoiceLine()
@@ -79,8 +78,6 @@ void AAudioController::AdjustSoundClassVolume(USoundClass* SoundClass, float Vol
 {
     if (SoundClass)
     {
-        // Create a sound mix to apply the volume change
-
         // Set up the sound class adjuster to modify the volume
         FSoundClassAdjuster Adjuster;
         Adjuster.SoundClassObject = SoundClass;
@@ -94,9 +91,6 @@ void AAudioController::AdjustSoundClassVolume(USoundClass* SoundClass, float Vol
         // Add the adjuster to the sound mix
         SoundMix->SoundClassEffects.Add(Adjuster);
 
-        // Log the volume change for debugging
-        UE_LOG(LogTemp, Log, TEXT("Adjusting volume of %s to %f"), *SoundClass->GetName(), Volume);
-
         // Apply the sound mix modifier to the world
         UGameplayStatics::PushSoundMixModifier(GetWorld(), SoundMix);
     }
@@ -104,10 +98,7 @@ void AAudioController::AdjustSoundClassVolume(USoundClass* SoundClass, float Vol
 
 void AAudioController::RestoreSoundClassVolume()
 {
-    // Log to see if this is being called
-    UE_LOG(LogTemp, Log, TEXT("Restoring sound class volume to 1.0f"));
-
-    // Restore the sound classes to normal volume (1.0f)
+    // Restore the sound classes to normal volume
     AdjustSoundClassVolume(AmbientSoundClass, 1.0f);
     AdjustSoundClassVolume(FXSoundClass, 1.0f);
 }
