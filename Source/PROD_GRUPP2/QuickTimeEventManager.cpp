@@ -82,7 +82,10 @@ bool UQuickTimeEventManager::AddQTEvent(FQtEvent Qt)
 
 void UQuickTimeEventManager::ReactionEvaluation()
 {
-	bKeyPressed = true;
+	if(!ListOfQTs.IsEmpty())
+	{
+		bKeyPressed = true;
+	}
 }
 
 bool UQuickTimeEventManager::CheckEvent()

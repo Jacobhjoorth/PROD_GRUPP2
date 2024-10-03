@@ -10,6 +10,9 @@ class USoundCue;
 
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSucceeded);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFailed);
+
 USTRUCT(BlueprintType)
 struct FQtEvent
 {
@@ -31,10 +34,8 @@ struct FQtEvent
 	bool bIsActive = false;
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsInit = false;
-};
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSucceeded);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFailed);
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROD_GRUPP2_API UQuickTimeEventManager : public UActorComponent
