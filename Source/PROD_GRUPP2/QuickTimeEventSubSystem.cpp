@@ -11,7 +11,7 @@ void UQuickTimeEventSubSystem::Start()
 {
 	ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	player->InputComponent->BindAction(TEXT("Reaction"), IE_Pressed, this, &UQuickTimeEventSubSystem::ReactionEvaluation);
-	
+	bKeyPressed = false;
 }
 
 void UQuickTimeEventSubSystem::Update()
@@ -26,11 +26,15 @@ void UQuickTimeEventSubSystem::Update()
 		ListOfQTs[0].bIsInit = true;
 	}
 
+	//UE_LOG(LogTemp, Warning, TEXT("SD: %f"), ListOfQTs[0].StartDelay);
 	if((ListOfQTs[0].StartDelay -= DeltaTime) <= 0)
 	{
+	
 		ListOfQTs[0].TimeFrame -= DeltaTime;
+		UE_LOG(LogTemp, Warning, TEXT("Check Event"));
 		if(CheckEvent())
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Do Event Action"));
 			DoEventActions(ListOfQTs[0]);
 		
 		}
@@ -38,7 +42,9 @@ void UQuickTimeEventSubSystem::Update()
 	}
 	if(bKeyPressed)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("KeyPressed"));
 		FailEvent();
+		bKeyPressed = false;
 	}
 }
 
@@ -75,8 +81,9 @@ void UQuickTimeEventSubSystem::ReactionEvaluation()
 	if(!ListOfQTs.IsEmpty())
 	{
 		bKeyPressed = true;
+	
 	}
-	UE_LOG(LogTemp, Warning, TEXT("KEy PRESSED"));
+
 }
 
 bool UQuickTimeEventSubSystem::CheckEvent()
@@ -84,7 +91,7 @@ bool UQuickTimeEventSubSystem::CheckEvent()
 
 
 	
-	if(ListOfQTs.IsEmpty() == true){
+	if(ListOfQTs.IsEmpty()){
 		return false;
 	}
 	
@@ -92,6 +99,7 @@ bool UQuickTimeEventSubSystem::CheckEvent()
 
 	if(CurrentEvent.TimeFrame <= 0){
 		FailEvent();
+		bKeyPressed = false;
 		return false;
 	}
 	if(bKeyPressed){
@@ -105,10 +113,12 @@ bool UQuickTimeEventSubSystem::CheckEvent()
 
 void  UQuickTimeEventSubSystem::FailEvent()
 {
-	ListOfQTs.Empty();
+	Clear();
 	UGameplayStatics::PlaySound2D(GetWorld(), FailSound);
 	OnFailed.Broadcast();
 	OnFailed.Clear();
+	UE_LOG(LogTemp, Error, TEXT("Num: %i"), ListOfQTs.Num());
+
 }
 
 void  UQuickTimeEventSubSystem::SucceededEvent()
@@ -127,7 +137,16 @@ void UQuickTimeEventSubSystem::DoEventActions(FQtEvent& Qt)
 {
 	if(!Qt.bIsActive)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("is Active"));
 		UGameplayStatics::PlaySound2D(GetWorld(), Qt.Audio);
 		Qt.bIsActive = true;
+	}
+}
+void UQuickTimeEventSubSystem::Clear()
+{
+	for (int i = 0; i < ListOfQTs.Num(); i++)
+	{
+		ListOfQTs.RemoveAt(i);
+		ListOfQTs.Reset(0);
 	}
 }

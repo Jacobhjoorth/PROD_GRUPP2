@@ -19,6 +19,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Start();
 
+	UFUNCTION(BlueprintCallable)
+	void Clear();
+
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnSucceeded OnSucceeded;
 
