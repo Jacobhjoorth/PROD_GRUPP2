@@ -26,15 +26,15 @@ void UQuickTimeEventSubSystem::Update()
 		ListOfQTs[0].bIsInit = true;
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("SD: %f"), ListOfQTs[0].StartDelay);
+	
 	if((ListOfQTs[0].StartDelay -= DeltaTime) <= 0)
 	{
 	
 		ListOfQTs[0].TimeFrame -= DeltaTime;
-		UE_LOG(LogTemp, Warning, TEXT("Check Event"));
+		
 		if(CheckEvent())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Do Event Action"));
+			
 			DoEventActions(ListOfQTs[0]);
 		
 		}
@@ -42,7 +42,7 @@ void UQuickTimeEventSubSystem::Update()
 	}
 	if(bKeyPressed)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("KeyPressed"));
+		
 		FailEvent();
 		bKeyPressed = false;
 	}
@@ -117,7 +117,7 @@ void  UQuickTimeEventSubSystem::FailEvent()
 	UGameplayStatics::PlaySound2D(GetWorld(), FailSound);
 	OnFailed.Broadcast();
 	OnFailed.Clear();
-	UE_LOG(LogTemp, Error, TEXT("Num: %i"), ListOfQTs.Num());
+	
 
 }
 
@@ -137,7 +137,7 @@ void UQuickTimeEventSubSystem::DoEventActions(FQtEvent& Qt)
 {
 	if(!Qt.bIsActive)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("is Active"));
+	
 		UGameplayStatics::PlaySound2D(GetWorld(), Qt.Audio);
 		Qt.bIsActive = true;
 	}
