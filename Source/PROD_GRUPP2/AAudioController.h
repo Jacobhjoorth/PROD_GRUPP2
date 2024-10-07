@@ -23,6 +23,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Audio")
 	bool PlayVoiceLine(USoundBase* SoundToPlay);
 
+	UFUNCTION(BlueprintCallable, Category="Audio")
+	bool PlayVoiceLineTwo(USoundBase* SoundToPlay);
+
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void StopCurrentVoiceLine();
 	

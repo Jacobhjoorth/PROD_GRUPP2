@@ -56,6 +56,33 @@ bool AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
     return false;
 }
 
+bool AAudioController::PlayVoiceLineTwo(USoundBase* SoundToPlay)
+{
+    StopCurrentVoiceLine();
+    
+    if (!SoundToPlay)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("No sound provided"));
+        return false;
+    }
+
+    // Cast to USoundCue to ensure it's the correct type
+    USoundCue* SoundCue = Cast<USoundCue>(SoundToPlay);
+    
+    // Spawn and play the new sound
+    UAudioComponent* AudioComponent = UGameplayStatics::SpawnSound2D(this, SoundCue);
+
+    if (AudioComponent)
+    {
+        // Play the audio component
+        AudioComponent->Play();
+        ActiveVoiceLines.Add(AudioComponent); // Add to active components
+        CurrentSoundCue = SoundCue; // Update current sound cue
+        return true;
+    }
+    return false;
+}
+
 void AAudioController::StopCurrentVoiceLine()
 {
     // Stop all active audio components
