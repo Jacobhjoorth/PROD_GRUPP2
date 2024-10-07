@@ -21,10 +21,10 @@ public:
 	AAudioController();
 
 	UFUNCTION(BlueprintCallable, Category="Audio")
-	bool PlayVoiceLine(USoundBase* SoundToPlay);
+	void PlayVoiceLine(USoundBase* SoundToPlay);
 
 	UFUNCTION(BlueprintCallable, Category="Audio")
-	bool PlayVoiceLineTwo(USoundBase* SoundToPlay);
+	void PlayVoiceLineTwo(USoundBase* SoundToPlay);
 
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void StopCurrentVoiceLine();
@@ -49,6 +49,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	bool bSoundIsTriggered;
 
 private:
 	TArray<UAudioComponent*> ActiveVoiceLines; // Array to track active audio components

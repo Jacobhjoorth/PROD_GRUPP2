@@ -1,10 +1,12 @@
 #include "AAudioController.h"
+#include "GameFramework/Character.h"
 
 AAudioController::AAudioController()
 {
     // Initialize the active audio components array and currently playing sound
     ActiveVoiceLines = TArray<UAudioComponent*>();
     CurrentSoundCue = nullptr; // Initialize to nullptr
+    bSoundIsTriggered = false;
 
     // Load SoundClass and SoundMix used for volume changes
     AmbientSoundClass = LoadObject<USoundClass>(nullptr, TEXT("/Game/Audio/Audio_Classes/Ambient.Ambient"));
@@ -22,16 +24,16 @@ void AAudioController::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 }
 
-bool AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
+void AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
 {
-    StopCurrentVoiceLine();
     
     if (!SoundToPlay)
     {
         UE_LOG(LogTemp, Warning, TEXT("No sound provided"));
-        return false;
     }
 
+    StopCurrentVoiceLine();
+    
     // Cast to USoundCue to ensure it's the correct type
     USoundCue* SoundCue = Cast<USoundCue>(SoundToPlay);
     
@@ -41,7 +43,7 @@ bool AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
     // Bind the OnAudioFinished delegate to restore volume
     AudioComponent->OnAudioFinished.AddDynamic(this, &AAudioController::RestoreSoundClassVolume);
 
-    if (AudioComponent)
+    if (AudioComponent && !bSoundIsTriggered)
     {
         // Play the audio component
         AudioComponent->Play();
@@ -51,26 +53,27 @@ bool AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
         // Lower the volume of the ambient and FX sound classes
         AdjustSoundClassVolume(AmbientSoundClass, 0.2f);
         AdjustSoundClassVolume(FXSoundClass, 0.2f);
-        return true;
+        bSoundIsTriggered = true;
     }
-    return false;
 }
 
-bool AAudioController::PlayVoiceLineTwo(USoundBase* SoundToPlay)
+void AAudioController::PlayVoiceLineTwo(USoundBase* SoundToPlay)
 {
-    StopCurrentVoiceLine();
     
     if (!SoundToPlay)
     {
         UE_LOG(LogTemp, Warning, TEXT("No sound provided"));
-        return false;
     }
 
+    StopCurrentVoiceLine();
+    
     // Cast to USoundCue to ensure it's the correct type
     USoundCue* SoundCue = Cast<USoundCue>(SoundToPlay);
     
     // Spawn and play the new sound
     UAudioComponent* AudioComponent = UGameplayStatics::SpawnSound2D(this, SoundCue);
+
+    AudioComponent->OnAudioFinished.AddDynamic(this, &AAudioController::RestoreSoundClassVolume);
 
     if (AudioComponent)
     {
@@ -78,9 +81,8 @@ bool AAudioController::PlayVoiceLineTwo(USoundBase* SoundToPlay)
         AudioComponent->Play();
         ActiveVoiceLines.Add(AudioComponent); // Add to active components
         CurrentSoundCue = SoundCue; // Update current sound cue
-        return true;
+        bSoundIsTriggered = true;
     }
-    return false;
 }
 
 void AAudioController::StopCurrentVoiceLine()
@@ -93,6 +95,7 @@ void AAudioController::StopCurrentVoiceLine()
             ActiveComponent->Stop();
             // Unbind the OnAudioFinished delegate to prevent calling RestoreSoundClassVolume after stopping
             ActiveComponent->OnAudioFinished.RemoveDynamic(this, &AAudioController::RestoreSoundClassVolume);
+            bSoundIsTriggered = false;
         }
     }
 
@@ -130,5 +133,6 @@ void AAudioController::RestoreSoundClassVolume()
     // Restore the sound classes to normal volume
     AdjustSoundClassVolume(AmbientSoundClass, 1.0f);
     AdjustSoundClassVolume(FXSoundClass, 1.0f);
+    bSoundIsTriggered = false;
 }
 

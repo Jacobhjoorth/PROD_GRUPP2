@@ -15,6 +15,7 @@ USoundCue* AARoomManager::GetTutorialVoiceLine() const
 			return Room.RoomSoundCue;
 		}
 	}
+	UE_LOG(LogTemp, Warning, TEXT("GetTutorialVoiceLine: No room has the player in it or no sound found!"));
 	return nullptr;
 }
 
