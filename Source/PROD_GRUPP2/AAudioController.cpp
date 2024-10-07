@@ -24,6 +24,8 @@ void AAudioController::Tick(float DeltaTime)
 
 bool AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
 {
+    StopCurrentVoiceLine();
+    
     if (!SoundToPlay)
     {
         UE_LOG(LogTemp, Warning, TEXT("No sound provided"));
