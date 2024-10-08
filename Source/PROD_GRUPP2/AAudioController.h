@@ -31,7 +31,7 @@ public:
 	
 	void AdjustSoundClassVolume(USoundClass* SoundClass, float Volume) const;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void RestoreSoundClassVolume();
 
 	void OnVoiceLineFinished();
