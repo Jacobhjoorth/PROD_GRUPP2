@@ -34,7 +34,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void RestoreSoundClassVolume();
 
-	void OnVoiceLineFinished();
+	//void OnVoiceLineFinished();
 
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	//USoundClass* FX;
@@ -54,11 +54,19 @@ public:
 	bool bSoundIsTriggered;
 
 private:
+	UPROPERTY()
 	TArray<UAudioComponent*> ActiveVoiceLines; // Array to track active audio components
+
+	UPROPERTY()
 	USoundBase* CurrentSoundCue; // Currently playing sound cue
 
 	// Load SoundClass and SoundMix used for volume changes
+	UPROPERTY()
 	USoundClass* AmbientSoundClass;
+
+	UPROPERTY()
 	USoundClass* FXSoundClass;
+
+	UPROPERTY()
 	USoundMix* SoundMix;
 };
