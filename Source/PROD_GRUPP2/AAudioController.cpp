@@ -19,7 +19,7 @@ AAudioController::AAudioController()
         UE_LOG(LogTemp, Error, TEXT("Failed to load sound classes"));
     }
 
-    SoundMix = NewObject<USoundMix>();
+    SoundMix = LoadObject<USoundMix>(nullptr, TEXT("/Game/Audio/Audio_Classes/FX_Mix.FX_Mix"));
 
     // Check if SoundMix was created successfully
     if (!SoundMix)
@@ -78,42 +78,6 @@ void AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
     }
 }
 
-void AAudioController::PlayVoiceLineTwo(USoundBase* SoundToPlay)
-{
-    // Check if the provided sound is valid
-    if (!SoundToPlay)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("No sound provided"));
-        return; // Return early if no sound
-    }
-
-    StopCurrentVoiceLine();
-
-    // Cast to USoundCue to ensure it's the correct type
-    USoundCue* SoundCue = Cast<USoundCue>(SoundToPlay);
-
-    if (!SoundCue)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Failed to cast SoundBase to SoundCue"));
-        return;
-    }
-
-    // Spawn and play the new sound
-    UAudioComponent* AudioComponent = UGameplayStatics::SpawnSound2D(this, SoundCue);
-
-    if (AudioComponent)
-    {
-        // Bind the OnAudioFinished delegate to restore volume
-        AudioComponent->OnAudioFinished.AddDynamic(this, &AAudioController::RestoreSoundClassVolume);
-
-        // Play the audio component
-        AudioComponent->Play();
-        ActiveVoiceLines.Add(AudioComponent); // Add to active components
-        CurrentSoundCue = SoundCue; // Update current sound cue
-        bSoundIsTriggered = true;
-    }
-}
-
 void AAudioController::StopCurrentVoiceLine()
 {
     // Stop all active audio components
@@ -165,8 +129,34 @@ void AAudioController::AdjustSoundClassVolume(USoundClass* SoundClass, float Vol
 
 void AAudioController::RestoreSoundClassVolume()
 {
+    PlayFeedbackSound(false);
+
     // Restore the sound classes to normal volume
     AdjustSoundClassVolume(AmbientSoundClass, 1.0f);
     AdjustSoundClassVolume(FXSoundClass, 1.0f);
     bSoundIsTriggered = false;
 }
+
+void AAudioController::PlayFeedbackSound(bool IsStartSound)
+{
+    // Find and play the sound using its asset path
+    if(IsStartSound)
+    {
+        USoundBase* FeedbackSoundStart = Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), nullptr, TEXT("/Game/Audio/Sounds/FX/StartAudio.StartAudio")));
+        if (FeedbackSoundStart)
+        {
+            UGameplayStatics::SpawnSound2D(this, FeedbackSoundStart); 
+        } 
+    }else
+    {
+        USoundBase* FeedbackSoundStop = Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), nullptr, TEXT("/Game/Audio/Sounds/FX/StopAudio.StopAudio")));
+        if (FeedbackSoundStop)
+        {
+            UGameplayStatics::SpawnSound2D(this, FeedbackSoundStop);
+        } 
+    }
+}
+
+
+    
+

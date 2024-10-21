@@ -23,11 +23,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Audio")
 	void PlayVoiceLine(USoundBase* SoundToPlay);
 
-	UFUNCTION(BlueprintCallable, Category="Audio")
-	void PlayVoiceLineTwo(USoundBase* SoundToPlay);
-
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void StopCurrentVoiceLine();
+
+	UFUNCTION(BlueprintCallable, Category = "Audio")
+	void PlayFeedbackSound(bool IsStartSound);
 	
 	void AdjustSoundClassVolume(USoundClass* SoundClass, float Volume) const;
 
