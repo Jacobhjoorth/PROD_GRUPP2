@@ -11,6 +11,7 @@ void UQuickTimeEventSubSystem::Start()
 {
 	ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	player->InputComponent->BindAction(TEXT("Reaction"), IE_Pressed, this, &UQuickTimeEventSubSystem::ReactionEvaluation);
+	
 	bKeyPressed = false;
 }
 
