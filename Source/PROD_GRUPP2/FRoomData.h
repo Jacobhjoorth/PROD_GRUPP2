@@ -22,8 +22,7 @@ public:
 	FRoomData()
 	{
 		bIsPlayerInRoom = false;
-		RoomSoundCue = nullptr; // Här kan man ha ett standard ljud som ska spelas när det inte finns någon tutorial
+		RoomSoundCue = nullptr; // Here you can have a default sound to play when no tutorial sound exists
 		Name = "";
 	}
 };
-

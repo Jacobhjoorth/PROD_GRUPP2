@@ -1,5 +1,6 @@
 #include "AAudioController.h"
 #include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
 
 AAudioController::AAudioController()
 {
@@ -11,7 +12,20 @@ AAudioController::AAudioController()
     // Load SoundClass and SoundMix used for volume changes
     AmbientSoundClass = LoadObject<USoundClass>(nullptr, TEXT("/Game/Audio/Audio_Classes/Ambient.Ambient"));
     FXSoundClass = LoadObject<USoundClass>(nullptr, TEXT("/Game/Audio/Audio_Classes/FX.FX"));
+
+    // Check if the sound classes were loaded successfully
+    if (!AmbientSoundClass || !FXSoundClass)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to load sound classes"));
+    }
+
     SoundMix = NewObject<USoundMix>();
+
+    // Check if SoundMix was created successfully
+    if (!SoundMix)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to create SoundMix"));
+    }
 }
 
 void AAudioController::BeginPlay()
@@ -26,25 +40,32 @@ void AAudioController::Tick(float DeltaTime)
 
 void AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
 {
-    
+    // Check if the provided sound is valid
     if (!SoundToPlay)
     {
         UE_LOG(LogTemp, Warning, TEXT("No sound provided"));
+        return; // Return early if no sound
     }
 
     StopCurrentVoiceLine();
     
     // Cast to USoundCue to ensure it's the correct type
     USoundCue* SoundCue = Cast<USoundCue>(SoundToPlay);
-    
+
+    if (!SoundCue)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Failed to cast SoundBase to SoundCue"));
+        return;
+    }
+
     // Spawn and play the new sound
     UAudioComponent* AudioComponent = UGameplayStatics::SpawnSound2D(this, SoundCue);
-    
-    // Bind the OnAudioFinished delegate to restore volume
-    AudioComponent->OnAudioFinished.AddDynamic(this, &AAudioController::RestoreSoundClassVolume);
 
     if (AudioComponent && !bSoundIsTriggered)
     {
+        // Bind the OnAudioFinished delegate to restore volume
+        AudioComponent->OnAudioFinished.AddDynamic(this, &AAudioController::RestoreSoundClassVolume);
+
         // Play the audio component
         AudioComponent->Play();
         ActiveVoiceLines.Add(AudioComponent); // Add to active components
@@ -59,24 +80,32 @@ void AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
 
 void AAudioController::PlayVoiceLineTwo(USoundBase* SoundToPlay)
 {
-    
+    // Check if the provided sound is valid
     if (!SoundToPlay)
     {
         UE_LOG(LogTemp, Warning, TEXT("No sound provided"));
+        return; // Return early if no sound
     }
 
     StopCurrentVoiceLine();
-    
+
     // Cast to USoundCue to ensure it's the correct type
     USoundCue* SoundCue = Cast<USoundCue>(SoundToPlay);
-    
+
+    if (!SoundCue)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Failed to cast SoundBase to SoundCue"));
+        return;
+    }
+
     // Spawn and play the new sound
     UAudioComponent* AudioComponent = UGameplayStatics::SpawnSound2D(this, SoundCue);
 
-    AudioComponent->OnAudioFinished.AddDynamic(this, &AAudioController::RestoreSoundClassVolume);
-
     if (AudioComponent)
     {
+        // Bind the OnAudioFinished delegate to restore volume
+        AudioComponent->OnAudioFinished.AddDynamic(this, &AAudioController::RestoreSoundClassVolume);
+
         // Play the audio component
         AudioComponent->Play();
         ActiveVoiceLines.Add(AudioComponent); // Add to active components
@@ -108,6 +137,12 @@ void AAudioController::StopCurrentVoiceLine()
 
 void AAudioController::AdjustSoundClassVolume(USoundClass* SoundClass, float Volume) const
 {
+    if (!SoundMix)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("SoundMix is null"));
+        return;
+    }
+
     if (SoundClass)
     {
         // Set up the sound class adjuster to modify the volume
@@ -135,4 +170,3 @@ void AAudioController::RestoreSoundClassVolume()
     AdjustSoundClassVolume(FXSoundClass, 1.0f);
     bSoundIsTriggered = false;
 }
-
