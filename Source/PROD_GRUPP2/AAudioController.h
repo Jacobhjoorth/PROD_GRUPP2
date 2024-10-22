@@ -11,7 +11,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "AAudioController.generated.h"
 
-
 UCLASS()
 class PROD_GRUPP2_API AAudioController : public AActor
 { 
@@ -34,14 +33,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void RestoreSoundClassVolume();
 
-	//void OnVoiceLineFinished();
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
-	//USoundClass* FX;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
-	//USoundClass* Ambient;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -52,6 +43,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	bool bSoundIsTriggered;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio");
+	USoundMix* SoundMix;
 
 private:
 	UPROPERTY()
@@ -66,7 +60,4 @@ private:
 
 	UPROPERTY()
 	USoundClass* FXSoundClass;
-
-	UPROPERTY()
-	USoundMix* SoundMix;
 };
