@@ -12,6 +12,8 @@ AAudioController::AAudioController()
     // Load SoundClass and SoundMix used for volume changes
     AmbientSoundClass = LoadObject<USoundClass>(nullptr, TEXT("/Game/Audio/Audio_Classes/Ambient.Ambient"));
     FXSoundClass = LoadObject<USoundClass>(nullptr, TEXT("/Game/Audio/Audio_Classes/FX.FX"));
+    MasterSoundClass = LoadObject<USoundClass>(nullptr, TEXT("/Game/Audio/Audio_Classes/Master.Master"));
+
 }
 
 void AAudioController::BeginPlay()
@@ -124,6 +126,14 @@ void AAudioController::AdjustSoundClassVolume(USoundClass* SoundClass, float Vol
 
         // Apply the sound mix modifier to the world
         UGameplayStatics::PushSoundMixModifier(GetWorld(), SoundMix);
+
+        if (SoundClass == MasterSoundClass)
+        {
+            AdjustSoundClassVolume(FXSoundClass, Volume);   // Adjust FX volume
+            AdjustSoundClassVolume(AmbientSoundClass, Volume);  // Adjust Ambient volume
+            // Adjust other children sound classes as needed
+        }
+        
         UE_LOG(LogTemp, Warning, TEXT("SoundMix applied successfully"));
     }
     else
@@ -173,3 +183,47 @@ void AAudioController::PlayFeedbackSound(bool IsStartSound)
         }
     }
 }
+
+float AAudioController::ChangeVolume(USoundClass* SoundClass, bool ShouldTurnUpVolume)
+{
+    if (!SoundClass)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("SoundClass is null, cannot change volume"));
+        return 0;
+    }
+
+    if (!SoundMix)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("SoundMix is null, cannot adjust volume"));
+        return 0;
+    }
+
+    // Get the current volume from the map, or use a default of 1.0 if not found
+    float* CurrentVolumePtr = SoundClassVolumes.Find(SoundClass);
+    if (!CurrentVolumePtr)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("SoundClass not found in volume map, initializing to 1.0f"));
+        CurrentVolumePtr = &SoundClassVolumes.Add(SoundClass, 1.0f);
+    }
+
+    // Adjust the volume
+    float CurrentVolume = *CurrentVolumePtr;
+    float VolumeChange = ShouldTurnUpVolume ? 0.1f : -0.1f;
+    float NewVolume = FMath::Clamp(CurrentVolume + VolumeChange, 0.0f, 1.0f);
+
+    // Update the map with the new volume
+    SoundClassVolumes[SoundClass] = NewVolume;
+
+    // Apply the volume change
+    AdjustSoundClassVolume(SoundClass, NewVolume);
+
+    UE_LOG(LogTemp, Warning, TEXT("Changed volume for %s to %f"), *SoundClass->GetName(), NewVolume);
+
+    return NewVolume;
+}
+
+
+
+
+    
+
