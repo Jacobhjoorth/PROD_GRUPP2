@@ -4,8 +4,15 @@
 
 #include "QuickTimeEventManager.h"
 #include "CoreMinimal.h"
+#include "CoreUObject.h"
+#include "Kismet2/WildcardNodeUtils.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "QuickTimeEventSubSystem.generated.h"
+
+
+DECLARE_LOG_CATEGORY_EXTERN(LogGameActions, Log, All);
+
+
 
 /**
  * 
@@ -19,6 +26,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Start();
 
+
+	void Deinitialize() override;
+	
 	UFUNCTION(BlueprintCallable)
 	void Clear();
 
@@ -38,7 +48,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FTransform InitialPlayerTransform;
 
-	
+	UFUNCTION(BlueprintCallable)
+	void LogToText(FString string, int PlayNum);
 	
 	UFUNCTION(BlueprintCallable)
 	bool AddQTEvent(FQtEvent Qt);
@@ -48,10 +59,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool AddAllQTEvent(TArray<FQtEvent> Qt);
+
 private:
 
 	
-
+   void LogTextDataToFile();
 
 	UFUNCTION(BlueprintCallable)
 	void ReactionEvaluation();
@@ -70,5 +82,8 @@ private:
 	TArray<FQtEvent> ListOfQTs;
 
 	bool bKeyPressed = false;
-	
+
+	FString Data; 
+
+
 };
