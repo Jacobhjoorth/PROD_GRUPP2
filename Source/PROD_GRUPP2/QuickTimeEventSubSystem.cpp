@@ -6,11 +6,24 @@
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
+
+
+
+DEFINE_LOG_CATEGORY(LogGameActions);
+
+
+void UQuickTimeEventSubSystem::Deinitialize()
+{
+	LogTextDataToFile();
+}
 
 void UQuickTimeEventSubSystem::Start()
 {
 	ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	player->InputComponent->BindAction(TEXT("Reaction"), IE_Pressed, this, &UQuickTimeEventSubSystem::ReactionEvaluation);
+	
 	bKeyPressed = false;
 }
 
@@ -150,3 +163,26 @@ void UQuickTimeEventSubSystem::Clear()
 		ListOfQTs.Reset(0);
 	}
 }
+
+
+void UQuickTimeEventSubSystem::LogToText(FString string, int PlayNum)
+{
+	FString date = FDateTime::Now().GetDate().ToString() + ", ";
+	FString time =  FDateTime::Now().GetTimeOfDay().ToString() + ", ";
+	FString playerSession = "PlayerSession: " + playerSession.FromInt(PlayNum);
+	
+	Data +=  playerSession + ", " + "Date: " + date + "Time" + time + "#" + string + "\n"; 
+}
+void UQuickTimeEventSubSystem::LogTextDataToFile()
+{
+	FString time = time.FromInt(FDateTime::Now().GetHour()) + "."+ time.FromInt(FDateTime::Now().GetMinute()) + "." + time.FromInt(FDateTime::Now().GetSecond());
+	FString day = day.FromInt(FDateTime::Now().GetYear()) + "." + day.FromInt(FDateTime::Now().GetMonth()) +"."+ day.FromInt(FDateTime::Now().GetDay());
+	FString FilePath = FPaths::ProjectDir() + "Saved/Logs/PlaytestLog_" + day + "-" + time + ".txt";
+	
+	// Create folder if it doesn't exist
+	IFileManager& FileManager = IFileManager::Get();
+	
+	// Write the event to the file
+	FFileHelper::SaveStringToFile(Data, *FilePath, FFileHelper::EEncodingOptions::AutoDetect, &IFileManager::Get(), FILEWRITE_Append);
+}
+

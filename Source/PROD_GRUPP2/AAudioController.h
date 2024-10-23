@@ -11,7 +11,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "AAudioController.generated.h"
 
-
 UCLASS()
 class PROD_GRUPP2_API AAudioController : public AActor
 { 
@@ -23,24 +22,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Audio")
 	void PlayVoiceLine(USoundBase* SoundToPlay);
 
-	UFUNCTION(BlueprintCallable, Category="Audio")
-	void PlayVoiceLineTwo(USoundBase* SoundToPlay);
-
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void StopCurrentVoiceLine();
+
+	UFUNCTION(BlueprintCallable, Category = "Audio")
+	void PlayFeedbackSound(bool IsStartSound);
 	
 	void AdjustSoundClassVolume(USoundClass* SoundClass, float Volume) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void RestoreSoundClassVolume();
 
-	//void OnVoiceLineFinished();
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
-	//USoundClass* FX;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
-	//USoundClass* Ambient;
+	UFUNCTION(BlueprintCallable, Category = "Audio")
+	float ChangeVolume(USoundClass* SoundClass, bool ShouldTurnUpVolume);
 
 protected:
 	// Called when the game starts or when spawned
@@ -52,6 +46,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	bool bSoundIsTriggered;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio");
+	USoundMix* SoundMix;
 
 private:
 	UPROPERTY()
@@ -68,5 +65,8 @@ private:
 	USoundClass* FXSoundClass;
 
 	UPROPERTY()
-	USoundMix* SoundMix;
+	USoundClass* MasterSoundClass;
+
+	UPROPERTY()
+	TMap<USoundClass*, float> SoundClassVolumes;
 };
