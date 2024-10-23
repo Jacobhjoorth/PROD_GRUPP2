@@ -33,6 +33,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void RestoreSoundClassVolume();
 
+	UFUNCTION(BlueprintCallable, Category = "Audio")
+	float ChangeVolume(USoundClass* SoundClass, bool ShouldTurnUpVolume);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -60,4 +63,10 @@ private:
 
 	UPROPERTY()
 	USoundClass* FXSoundClass;
+
+	UPROPERTY()
+	USoundClass* MasterSoundClass;
+
+	UPROPERTY()
+	TMap<USoundClass*, float> SoundClassVolumes;
 };
