@@ -3,6 +3,7 @@
 
 #include "QuickTimeEventSubSystem.h"
 
+#include "Components/AudioComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
@@ -36,6 +37,7 @@ void UQuickTimeEventSubSystem::Update()
 	if(!ListOfQTs[0].bIsInit)
 	{
 		UGameplayStatics::PlaySound2D(GetWorld(), ListOfQTs[0].initAudio);
+	
 		ListOfQTs[0].bIsInit = true;
 	}
 
@@ -101,9 +103,6 @@ void UQuickTimeEventSubSystem::ReactionEvaluation()
 
 bool UQuickTimeEventSubSystem::CheckEvent()
 {
-
-
-	
 	if(ListOfQTs.IsEmpty()){
 		return false;
 	}
