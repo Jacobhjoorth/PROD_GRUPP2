@@ -14,6 +14,8 @@ AAudioController::AAudioController()
     FXSoundClass = LoadObject<USoundClass>(nullptr, TEXT("/Game/Audio/Audio_Classes/FX.FX"));
     MasterSoundClass = LoadObject<USoundClass>(nullptr, TEXT("/Game/Audio/Audio_Classes/Master.Master"));
 
+    AdjustVolume = 0.2;
+
 }
 
 void AAudioController::BeginPlay()
@@ -64,8 +66,8 @@ void AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
         CurrentSoundCue = SoundCue; // Update current sound cue
 
         // Lower the volume of the ambient and FX sound classes
-        AdjustSoundClassVolume(AmbientSoundClass, 0.2f);
-        AdjustSoundClassVolume(FXSoundClass, 0.2f);
+        AdjustSoundClassVolume(AmbientSoundClass, AdjustVolume);
+        AdjustSoundClassVolume(FXSoundClass, AdjustVolume);
         bSoundIsTriggered = true;
     }
     else
