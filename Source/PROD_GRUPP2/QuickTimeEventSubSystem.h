@@ -4,8 +4,6 @@
 
 #include "QuickTimeEventManager.h"
 #include "CoreMinimal.h"
-#include "CoreUObject.h"
-#include "Kismet2/WildcardNodeUtils.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "QuickTimeEventSubSystem.generated.h"
 
