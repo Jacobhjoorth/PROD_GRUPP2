@@ -125,12 +125,9 @@ bool UQuickTimeEventSubSystem::CheckEvent()
 
 void  UQuickTimeEventSubSystem::FailEvent()
 {
-	Clear();
 	UGameplayStatics::PlaySound2D(GetWorld(), FailSound);
 	OnFailed.Broadcast();
-	OnFailed.Clear();
-	
-
+	Clear();
 }
 
 void  UQuickTimeEventSubSystem::SucceededEvent()
@@ -161,6 +158,11 @@ void UQuickTimeEventSubSystem::Clear()
 		ListOfQTs.RemoveAt(i);
 		ListOfQTs.Reset(0);
 	}
+
+
+	UE_LOG(LogTemp, Warning, TEXT("CLEARING"));
+	OnSucceeded.Clear();
+	OnFailed.Clear();
 }
 
 
