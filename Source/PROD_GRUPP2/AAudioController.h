@@ -50,9 +50,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio");
 	USoundMix* SoundMix;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Audio");
-	float AdjustVolume;
-	
 private:
 	UPROPERTY()
 	TArray<UAudioComponent*> ActiveVoiceLines; // Array to track active audio components
