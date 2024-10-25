@@ -2,8 +2,6 @@
 
 
 #include "QuickTimeEventSubSystem.h"
-
-#include "Components/AudioComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
