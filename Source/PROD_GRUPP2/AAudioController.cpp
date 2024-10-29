@@ -4,16 +4,17 @@
 
 AAudioController::AAudioController()
 {
-    // Initialize the active audio components array and currently playing sound
+    // Initialization of active audio components array and currently playing sound
     ActiveVoiceLines = TArray<UAudioComponent*>();
-    CurrentSoundCue = nullptr; // Initialize to nullptr
+    CurrentSoundCue = nullptr; 
     bSoundIsTriggered = false;
 
-    // Load SoundClass and SoundMix used for volume changes
+    // Loading of SoundClass and SoundMix used for volume changes
     AmbientSoundClass = LoadObject<USoundClass>(nullptr, TEXT("/Game/Audio/Audio_Classes/Ambient.Ambient"));
     FXSoundClass = LoadObject<USoundClass>(nullptr, TEXT("/Game/Audio/Audio_Classes/FX.FX"));
     MasterSoundClass = LoadObject<USoundClass>(nullptr, TEXT("/Game/Audio/Audio_Classes/Master.Master"));
 
+    // Initialization of the amount of volume that should be adjusted
     AdjustVolume = 0.2;
 
 }
@@ -28,7 +29,7 @@ void AAudioController::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 }
 
-void AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
+void AAudioController::PlayVoiceLine(USoundBase* SoundToPlay, bool ShouldHaveFeedback)
 {
     UE_LOG(LogTemp, Warning, TEXT("Attempting to play voice line"));
 
@@ -42,6 +43,7 @@ void AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
     // Cast to USoundCue to ensure it's the correct type
     USoundCue* SoundCue = Cast<USoundCue>(SoundToPlay);
 
+    // Check if the SoundCue is valid
     if (!SoundCue)
     {
         UE_LOG(LogTemp, Warning, TEXT("Failed to cast SoundBase to SoundCue"));
@@ -57,8 +59,15 @@ void AAudioController::PlayVoiceLine(USoundBase* SoundToPlay)
     {
         UE_LOG(LogTemp, Warning, TEXT("Playing voice line"));
 
-        // Bind the OnAudioFinished delegate to restore volume
-        AudioComponent->OnAudioFinished.AddDynamic(this, &AAudioController::RestoreSoundClassVolume);
+        if(ShouldHaveFeedback)
+        {
+            // Bind the OnAudioFinished delegate to restore volume
+            AudioComponent->OnAudioFinished.AddDynamic(this, &AAudioController::RestoreSoundClassVolume);
+        }else
+        {
+            // Bind the OnAudioFinished delegate to restore volume
+            AudioComponent->OnAudioFinished.AddDynamic(this, &AAudioController::AAudioController::RestoreSoundClassVolumeWithoutFeedback);
+        }
 
         // Play the audio component
         AudioComponent->Play();
@@ -94,11 +103,11 @@ void AAudioController::StopCurrentVoiceLine()
         }
     }
 
-    ActiveVoiceLines.Empty(); // Clear the array
-    CurrentSoundCue = nullptr; // Reset current sound cue
-
-    // Restore the sound classes to normal after stopping
-    RestoreSoundClassVolume();
+    // Clear the array
+    ActiveVoiceLines.Empty();
+    
+    // Reset current sound cue
+    CurrentSoundCue = nullptr; 
 }
 
 void AAudioController::AdjustSoundClassVolume(USoundClass* SoundClass, float Volume) const
@@ -131,9 +140,11 @@ void AAudioController::AdjustSoundClassVolume(USoundClass* SoundClass, float Vol
 
         if (SoundClass == MasterSoundClass)
         {
-            AdjustSoundClassVolume(FXSoundClass, Volume);   // Adjust FX volume
-            AdjustSoundClassVolume(AmbientSoundClass, Volume);  // Adjust Ambient volume
-            // Adjust other children sound classes as needed
+            // Adjust FX volume
+            AdjustSoundClassVolume(FXSoundClass, Volume);
+
+            // Adjust Ambient volume
+            AdjustSoundClassVolume(AmbientSoundClass, Volume);  
         }
         
         UE_LOG(LogTemp, Warning, TEXT("SoundMix applied successfully"));
@@ -149,6 +160,16 @@ void AAudioController::RestoreSoundClassVolume()
     UE_LOG(LogTemp, Warning, TEXT("Restoring sound class volume to default"));
 
     PlayFeedbackSound(false);
+
+    // Restore the sound classes to normal volume
+    AdjustSoundClassVolume(AmbientSoundClass, 1.0f);
+    AdjustSoundClassVolume(FXSoundClass, 1.0f);
+    bSoundIsTriggered = false;
+}
+
+void AAudioController::RestoreSoundClassVolumeWithoutFeedback()
+{
+    UE_LOG(LogTemp, Warning, TEXT("Restoring sound class volume to default"));
 
     // Restore the sound classes to normal volume
     AdjustSoundClassVolume(AmbientSoundClass, 1.0f);

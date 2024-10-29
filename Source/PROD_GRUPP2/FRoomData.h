@@ -22,7 +22,7 @@ public:
 	FRoomData()
 	{
 		bIsPlayerInRoom = false;
-		RoomSoundCue = nullptr; // Here you can have a default sound to play when no tutorial sound exists
+		RoomSoundCue = nullptr; 
 		Name = "";
 	}
 };

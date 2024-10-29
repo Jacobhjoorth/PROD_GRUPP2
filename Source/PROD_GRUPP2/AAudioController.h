@@ -20,7 +20,7 @@ public:
 	AAudioController();
 
 	UFUNCTION(BlueprintCallable, Category="Audio")
-	void PlayVoiceLine(USoundBase* SoundToPlay);
+	void PlayVoiceLine(USoundBase* SoundToPlay, bool ShouldHaveFeedback);
 
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void StopCurrentVoiceLine();
@@ -29,6 +29,9 @@ public:
 	void PlayFeedbackSound(bool IsStartSound);
 	
 	void AdjustSoundClassVolume(USoundClass* SoundClass, float Volume) const;
+
+	UFUNCTION(BlueprintCallable, Category = "Audio")
+	void RestoreSoundClassVolumeWithoutFeedback();
 
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void RestoreSoundClassVolume();
@@ -54,11 +57,13 @@ public:
 	float AdjustVolume;
 	
 private:
+	// Array to track active audio components
 	UPROPERTY()
-	TArray<UAudioComponent*> ActiveVoiceLines; // Array to track active audio components
+	TArray<UAudioComponent*> ActiveVoiceLines; 
 
+	// Currently playing sound cue
 	UPROPERTY()
-	USoundBase* CurrentSoundCue; // Currently playing sound cue
+	USoundBase* CurrentSoundCue; 
 
 	// Load SoundClass and SoundMix used for volume changes
 	UPROPERTY()
